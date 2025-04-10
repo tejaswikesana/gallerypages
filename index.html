@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>API Photo Gallery</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            text-align: center;
+        }
+
+        header, footer {
+            background-color: #1c1f23;
+            color: white;
+            padding: 10px 0;
+        }
+
+        h1 {
+            margin: 20px 0;
+        }
+
+        #gallery {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            padding: 20px;
+        }
+
+        .photo-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+            width: 250px;
+            transition: transform 0.2s;
+        }
+
+        .photo-card:hover {
+            transform: scale(1.03);
+        }
+
+        .photo-card img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .photo-info {
+            padding: 10px;
+            font-size: 14px;
+        }
+
+        .error {
+            color: red;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h2>API Photo Gallery</h2>
+</header>
+
+<h1>Dynamic Image Gallery</h1>
+
+<div id="gallery">
+    <!-- Images will load here -->
+</div>
+
+<footer>
+    <p>© 2025 Tejaswi Kesana Gallery | Powered by Unsplash API</p>
+</footer>
+
+<script>
+    const accessKey = "OqZno1BxwQcYVo4zAli35Z8ySn0tpQ0VxhOTLWyYFx0"; // 🔑 Replace with your actual access key
+    const collectionId = "mEJQy3wFfqQ"; // 🔹 Replace with your collection ID
+
+    async function loadImagesFromCollection() {
+        try {
+            const response = await fetch(`https://api.unsplash.com/collections/${collectionId}/photos?client_id=${accessKey}&per_page=12`);
+            if (!response.ok) {
+                throw new Error("Failed to fetch images");
+            }
+
+            const data = await response.json();
+            const gallery = document.getElementById("gallery");
+            gallery.innerHTML = "";
+
+            data.forEach(photo => {
+                const card = document.createElement("div");
+                card.className = "photo-card";
+
+                const img = document.createElement("img");
+                img.src = photo.urls.small;
+                img.alt = photo.alt_description || "Unsplash Photo";
+
+                const info = document.createElement("div");
+                info.className = "photo-info";
+                info.textContent = `By: ${photo.user.name}`;
+
+                card.appendChild(img);
+                card.appendChild(info);
+                gallery.appendChild(card);
+            });
+
+        } catch (error) {
+            document.getElementById("gallery").innerHTML = `<p class="error">Failed to load images. Try again later.</p>`;
+            console.error(error);
+        }
+    }
+
+    window.onload = loadImagesFromCollection;
+</script>
+
+</body>
+</html>
